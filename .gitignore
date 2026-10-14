@@ -16,6 +16,9 @@ next-env.d.ts
 # AI 协作工作目录：含本地笔记与记忆，不进公开仓库
 .workbuddy-ai/
 
+# 原型稿与历史文档：本地存档，不公开
+pastDocs/
+
 # 系统与编辑器
 .DS_Store
 Thumbs.db
