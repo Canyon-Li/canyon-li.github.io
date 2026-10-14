@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>导语与自我介绍 · 逐个定夺</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#FBF8F3; --bg-alt:#F5F0E8; --surface:#FFF;
+  --ink:#33302C; --ink-soft:#5C564E; --muted:#6C655D; --muted-2:#A79F93;
+  --wood:#DDB78C; --wood-deep:#C08F5E; --wood-strong:#A87A46; --wood-dark:#7E5530; --wood-tint:#F3E4D1;
+  --sage:#9BAE9B; --sage-deep:#6F8069; --sage-text:#5C6B57; --sage-tint:#EAF0E7;
+  --danger:#9E4636; --danger-tint:#F5E6E1;
+  --hair:rgba(51,48,44,.12); --hair-strong:rgba(51,48,44,.24); --hair-field:rgba(51,48,44,.57);
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-full:999px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font-sans);font-size:16px;line-height:1.75;font-weight:400;
+}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+code,.mono{font-family:var(--font-mono)}
+
+/* ---------- 头部 ---------- */
+header.top{padding:56px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font-size:clamp(26px,3.4vw,34px);line-height:1.3;font-weight:500;margin:0 0 14px}
+.lede{color:var(--ink-soft);margin:0 0 22px;max-width:62ch}
+.howto{background:var(--wood-tint);border-radius:var(--r-md);padding:14px 18px;font-size:14px;color:var(--ink-soft)}
+.howto b{color:var(--wood-dark);font-weight:500}
+
+/* ---------- 进度 ---------- */
+.progress{display:flex;align-items:center;gap:14px;margin-top:24px;flex-wrap:wrap}
+.bar{flex:1;min-width:160px;height:6px;background:var(--bg-alt);border-radius:var(--r-full);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--wood-deep);transition:width .28s var(--ease)}
+.count{font-family:var(--font-mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+/* ---------- 按钮 ---------- */
+button{font:inherit;cursor:pointer}
+.btn{
+  border:1px solid var(--hair-strong);background:transparent;color:var(--ink);
+  border-radius:var(--r-full);padding:7px 16px;font-size:13.5px;
+  transition:background .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease);
+}
+.btn:hover{background:var(--surface);border-color:var(--hair-field);transform:translateY(-1px)}
+.btn:focus-visible{outline:2px solid var(--wood-strong);outline-offset:2px}
+.btn-solid{background:var(--wood-deep);border-color:var(--wood-deep);color:#fff}
+.btn-solid:hover{background:var(--wood-strong);border-color:var(--wood-strong)}
+.btn-sm{padding:4px 11px;font-size:12.5px}
+.btn[aria-pressed="true"]{background:var(--wood-tint);border-color:var(--wood-strong)}
+
+/* ---------- 分组 ---------- */
+section.group{padding:44px 0 0}
+.group-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.group-head h2{font-size:19px;font-weight:500;margin:0}
+.group-head .tag{
+  font-size:11px;font-family:var(--font-mono);letter-spacing:.06em;
+  border:1px solid var(--hair-strong);border-radius:var(--r-full);padding:2px 9px;color:var(--muted);
+}
+.group-note{color:var(--muted);font-size:13.5px;margin:0 0 20px}
+
+/* ---------- 卡片 ---------- */
+.card{
+  background:var(--surface);border:.5px solid var(--hair);border-radius:var(--r-lg);
+  padding:22px 24px;margin-bottom:16px;transition:opacity .2s var(--ease);
+}
+.card[data-done="1"]{border-color:var(--wood);background:#FFFDFA}
+.card.dim{opacity:.45}
+.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.num{
+  font-family:var(--font-mono);font-size:12px;line-height:1;
+  min-width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:var(--r-full);background:var(--bg-alt);color:var(--muted);flex:none;
+}
+.card[data-done="1"] .num{background:var(--wood-deep);color:#fff}
+.card h3{font-size:16px;font-weight:500;margin:0;flex:1;line-height:1.5}
+.where{
+  font-family:var(--font-mono);font-size:11.5px;color:var(--muted);
+  border:1px solid var(--hair);border-radius:var(--r-sm);padding:2px 7px;white-space:nowrap;
+}
+.where:empty{display:none}
+.mark{
+  font-size:11px;font-family:var(--font-mono);white-space:nowrap;flex:none;
+  border-radius:var(--r-full);padding:2px 9px;margin-top:3px;
+}
+.mark-applied{background:var(--sage-tint);color:var(--sage-text);border:1px solid var(--sage)}
+.mark-kept{background:var(--bg-alt);color:var(--muted);border:1px solid var(--hair-strong)}
+.mark-pending{background:var(--danger-tint);color:var(--danger);border:1px solid var(--danger)}
+
+.quote{
+  background:var(--bg-alt);border-radius:var(--r-md);padding:12px 16px;
+  font-size:14.5px;color:var(--ink-soft);margin:0 0 12px;
+  border-left:2px solid var(--wood);
+}
+.quote .lb{color:var(--muted);font-size:12.5px;font-family:var(--font-mono);display:block;margin-bottom:4px}
+.why{font-size:13.5px;color:var(--muted);margin:0 0 16px}
+.why b{color:var(--danger);font-weight:500}
+
+fieldset{border:0;padding:0;margin:0 0 12px}
+legend{font-size:12.5px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.04em;padding:0 0 8px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{
+  display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hair-strong);
+  border-radius:var(--r-full);padding:6px 14px;font-size:13.5px;cursor:pointer;
+  transition:background .18s var(--ease),border-color .18s var(--ease);
+}
+.opt:hover{background:var(--bg-alt)}
+.opt input{accent-color:var(--wood-strong);margin:0;width:15px;height:15px;flex:none}
+.opt:has(input:checked){background:var(--wood-tint);border-color:var(--wood-strong);color:var(--wood-dark)}
+.opt:has(input:focus-visible){outline:2px solid var(--wood-strong);outline-offset:2px}
+
+textarea{
+  width:100%;font:inherit;font-size:14px;color:var(--ink);
+  background:var(--bg);border:1px solid var(--hair-field);border-radius:var(--r-sm);
+  padding:10px 12px;resize:vertical;min-height:44px;line-height:1.7;
+}
+textarea:focus-visible{outline:2px solid var(--wood-strong);outline-offset:1px}
+textarea::placeholder{color:var(--muted-2)}
+.suggest{
+  display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
+  margin-top:12px;padding-top:12px;border-top:1px dashed var(--hair);
+  font-size:13.5px;color:var(--sage-text);
+}
+.suggest .lbl{font-family:var(--font-mono);font-size:11.5px;color:var(--sage-deep);white-space:nowrap;padding-top:3px}
+.suggest .val{flex:1;min-width:180px}
+
+/* ---------- 导出 ---------- */
+section.export{margin:56px 0 0;padding:28px 0 0;border-top:1px solid var(--hair)}
+.out{
+  width:100%;min-height:240px;font-family:var(--font-mono);font-size:12.5px;line-height:1.75;
+  background:var(--bg-alt);border:1px solid var(--hair-field);border-radius:var(--r-md);padding:14px;
+  white-space:pre;overflow:auto;
+}
+.hint{font-size:13px;color:var(--muted);margin:10px 0 0}
+.ok{color:var(--sage-text)}
+
+/* ---------- 底栏 ---------- */
+.bar-fixed{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:rgba(251,248,243,.94);backdrop-filter:blur(8px);
+  border-top:1px solid var(--hair);
+}
+.bar-fixed .wrap{display:flex;align-items:center;gap:14px;padding:12px 24px;flex-wrap:wrap}
+.bar-fixed .count{margin-right:auto}
+main{padding-bottom:120px}
+
+@media (max-width:640px){
+  header.top{padding:36px 0 22px}
+  .card{padding:18px 16px}
+  .where{display:none}
+  .bar-fixed .wrap{padding:10px 16px;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>导语与自我介绍 · 逐个定夺</h1>
+    <p class="lede">
+      站点上每一页开头的导语，加上首页和关于页的自我介绍——<b>全部是我替你写的</b>。
+      每条都标了位置和原文。你只要选一个处理方式：<b>删除</b>、<b>保留</b>，或者 <b>其他</b>——
+      选「其他」就把你想改成什么写进框里（直接写新句子就行）。
+    </p>
+    <div class="howto">
+      填完往下拉到底，点 <b>复制我的决定</b>，把结果贴回对话里就行。
+      中途关掉页面不会丢——选择存在本机浏览器里。和上一份清单互不影响。<br>
+      标着 <b>已改</b> 的，是你说过、我已经落到站点上的；<b>已定 · 保持原样</b> 是你选了「保留」；
+      <b>待补文案</b> 是你选了要改但还没给字。没标记的就是还没填的。
+    </div>
+
+    <div class="progress">
+      <div class="bar"><i id="barfill"></i></div>
+      <span class="count" id="count" aria-live="polite">0 / 22 已定</span>
+    </div>
+
+    <div class="tools">
+      <button class="btn btn-sm" id="toggle-undecided" aria-pressed="false">只看未决定的</button>
+      <button class="btn btn-sm" id="reset">全部清空</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="groups"></main>
+
+<section class="export wrap" id="export-sec">
+  <h2 style="font-size:19px;font-weight:500;margin:0 0 6px">我的决定</h2>
+  <p class="hint" style="margin:0 0 14px">
+    下面这段是自动生成的。点按钮复制，或者直接手动选中复制。
+  </p>
+  <div class="tools" style="margin:0 0 14px">
+    <button class="btn btn-solid" id="copy">复制我的决定</button>
+    <button class="btn" id="download">下载成 .md</button>
+    <span class="hint ok" id="copied" style="margin:0;align-self:center"></span>
+  </div>
+  <textarea class="out" id="out" readonly aria-label="我的决定（可复制）"></textarea>
+</section>
+
+<div class="bar-fixed">
+  <div class="wrap">
+    <span class="count" id="count2" aria-live="polite">0 / 22 已定</span>
+    <button class="btn btn-sm" id="copy2">复制我的决定</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   数据：每一条导语 / 自我介绍
+   ============================================================ */
+const GROUPS = [
+  {
+    key: 'home',
+    title: '一 · 首页',
+    tag: 'HOME',
+    note: '访客落地的地方。这几句话决定「这人是谁、在做什么」。',
+    items: [
+      {
+        id: 'p1',
+        mark: 'pending',
+        title: '首页 · 大标题（h1）',
+        where: 'page.tsx:28',
+        now: '做 Agent 的工程，也量它的边界。',
+        nowLabel: '首屏最大的那句话',
+        why: '全站第一句，同时是你的定位和标语。',
+        suggest: { choice: '保留', note: '' },
+        suggestLabel: '「工程」和「边界」两个词把两条线都说到了，挺准。',
+      },
+      {
+        id: 'p2',
+        title: '首页 · 首屏导语',
+        where: 'page.tsx:33',
+        now: '我是 Canyon。这里主要放我做过的项目——每个都写了为什么做、怎么取舍、结果如何；也放一些文章，都是真的，更新不快。',
+        why: '第一段自我介绍。访客大概三秒内判断「这人干什么的」。',
+        mark: 'applied',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p2b',
+        num: '2b',
+        title: '首页 · 「最近在学习……」那一行',
+        where: '还没定放哪',
+        now: '最近在学习 Agent、RAG、项目上线',
+        nowLabel: '你在第 2 条的备注里写的，说「这一行没决定好」',
+        why: '这句现在不在站点上。要放的话有四个现成的位置：① 首屏导语下面单独一行；② 首屏那个小标签（现在写「AI Agent 开发者」）；③ 首页「最近」那条（现在写「在做 Peregrine · 在读…」）；④ 近况页顶部。选「其他」，把位置 + 想要的说法写进框里。',
+      },
+      {
+        id: 'p3',
+        mark: 'applied',
+        title: '首页 · 「关于我」导语一',
+        where: 'page.tsx:232',
+        now: '做 AI Agent / RAG / MCP 的工程实现，也在意它们的安全边界。写东西是这几年养成的习惯，起初只是记录，后来发现写下来才算真的想明白。',
+        why: '前半句讲能力，后半句讲「为什么写文章」。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p4',
+        mark: 'applied',
+        title: '首页 · 「关于我」导语二',
+        where: 'page.tsx:236',
+        now: '这个网站没有评论、没有统计、没有花哨的动效。它只是一张摊开的桌子，上面放着我在意的东西。',
+        nowLabel: '上一轮你勾了「其他」但没写改成什么，所以先原样留着',
+        why: '同一个意思在关于页又说了一遍（第 9 条）。要么只留一处，要么改成两句不一样的话。',
+      },
+      {
+        id: 'p5',
+        mark: 'kept',
+        title: '首页 · 「关于我」引用',
+        where: 'page.tsx:241',
+        now: '如果你也在做类似的事，欢迎写封信给我，聊聊。',
+        why: '一句邀请。原来的落款（「五个项目的源码都在 GitHub 上」）上一轮已经删掉了。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p6',
+        mark: 'applied',
+        title: '首页 · 「这几年做过的事」导语',
+        where: 'page.tsx:319',
+        now: '按时间倒序，只记重要的节点。',
+        why: '时间线那一段的说明。四张卡的内容在 site.ts 里，是第 19 条。',
+        suggest: { choice: '保留', note: '' },
+      },
+    ],
+  },
+  {
+    key: 'about',
+    title: '二 · 关于页',
+    tag: 'ABOUT',
+    note: '首页讲「做什么」，关于页讲「怎么做、为什么」。',
+    items: [
+      {
+        id: 'p7',
+        mark: 'applied',
+        title: '关于页 · 大标题（h1）',
+        where: 'about/page.tsx:30',
+        now: '把复杂的东西做成能上手的工具。',
+        why: '和首页那句「量它的边界」是两种气质：一个讲做，一个讲收。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p8',
+        mark: 'applied',
+        title: '关于页 · 导语一',
+        where: 'about/page.tsx:35',
+        now: '我是 Canyon，AI Agent 开发者。做 AI Agent / RAG / MCP 的工程实现，也在意它们的安全边界——一个跑得起来的 Agent 和一个拦得住的 Agent，中间隔着一整套要量的东西。',
+        why: '比首页那句长，多解释了「为什么安全边界重要」。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p9',
+        mark: 'applied',
+        title: '关于页 · 导语二',
+        where: 'about/page.tsx:40',
+        now: '这个网站没有评论、没有统计、没有花哨的动效。它只是一张摊开的桌子，上面放着我在意的东西——5 个项目，3 篇文章，都写完了。',
+        nowLabel: '和第 4 条重复',
+        why: '和首页那句几乎一样，只是末尾多了两个数字。两处并存的写法会让人觉得你在凑字数。',
+      },
+      {
+        id: 'p10',
+        mark: 'applied',
+        title: '关于页 · 「联系」导语',
+        where: 'about/page.tsx:229',
+        now: '不管是想聊一个想法、指出文章里的错，还是发现了某个项目的问题，都欢迎。邮件是最稳定的方式。',
+        why: '告诉别人「可以为了什么写信给我」。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p11',
+        title: '关于页 · 上游贡献那一节的标题',
+        where: 'about/page.tsx:155',
+        now: '读源码时撞到的问题，修完提回去',
+        nowLabel: '下面挂着三个已合并的真实 PR',
+        why: '你写了「开源新手，一些已合并 PR。」但没选处理方式，所以我没动它。这是整页最硬的证据（三个已合并的 PR）。选「其他」，把新标题写进框里，我就改。',
+        suggest: { choice: '保留', note: '' },
+      },
+    ],
+  },
+  {
+    key: 'pages',
+    title: '三 · 项目 / 文章 / 归档 / 近况',
+    tag: 'SUB PAGES',
+    note: '四个内页的开场白。',
+    items: [
+      {
+        id: 'p12',
+        mark: 'applied',
+        title: '项目页 · 导语',
+        where: 'works/page.tsx:27',
+        now: '按时间倒序。每个项目都写了四件事：为什么做、怎么取舍、结果如何、哪里还不够。源码都在 GitHub 上，链接放在每一页的底部。',
+        why: '「四件事」这个说法和详情页实际的字段数对不上（详情页有十一项）。',
+        suggest: { choice: '其他', note: '按时间倒序。每个项目都写了为什么做、怎么取舍、结果如何、哪里还不够。源码都在 GitHub 上，链接放在每一页的底部。' },
+        suggestLabel: '把「四件事」去掉，就不会和详情页的字段数打架。',
+      },
+      {
+        id: 'p13',
+        mark: 'applied',
+        title: '文章页 · 标题 + 导语',
+        where: 'posts/page.tsx:26',
+        now: '写下来的想法 ／ 按时间倒序。写东西起初只是记录，后来发现写下来才算真的想明白。更新不快，但每篇都是真的。',
+        why: '「写下来才算真的想明白」和首页那句几乎一样，「更新不快」首页也说过一次。',
+        suggest: { choice: '其他', note: '按时间倒序。写东西起初只是记录，后来发现写下来才算真的想明白。' },
+        suggestLabel: '去掉和首页重复的那半句。',
+      },
+      {
+        id: 'p14',
+        title: '归档页 · 导语',
+        where: 'archive/page.tsx:29',
+        now: '按年份倒序。这里比列表页更适合回头翻——想找某一年写过什么，从这里最快。',
+        why: '归档页在 /archive —— 页脚「其他」那一栏里叫「文章归档」，文章页顶部也有个「按年份归档」按钮；顶部导航里没有它，所以不好找。要不要顺手加进导航，说一声。',
+        nowLabel: '你上次写「哪一页？我没找到」，答案写在下面',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p15',
+        title: '近况页 · 导语',
+        where: 'now/page.tsx:64',
+        now: '这里放「此刻」——手上在推的事、在写的东西、在读的书。它不像项目页那样只记结果，也不像关于页那样几年不变。',
+        why: '解释 /now 这一页是干嘛的。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p16',
+        title: '近况页 · 三张卡',
+        where: 'now/page.tsx:24',
+        now: '① Peregrine 的运行时（本地优先的对话式 Agent 工作台……）② 设计决策记录（每个项目都留一份：背景、备选、理由、代价……）③ letta / llama_index / ragflow 的源码（带着「这条边界他们怎么处理」的问题读……）',
+        nowLabel: '每张卡都是一段描述文字',
+        why: '这三条是我按你的仓库推出来的——「在读那三个库」「在写决策记录」都只有间接证据，你确认一下是不是真的。',
+      },
+    ],
+  },
+  {
+    key: 'site',
+    title: '四 · 其他页面与站点级',
+    tag: 'MISC',
+    note: '不在你列的那六页里，但也都是我写的。',
+    items: [
+      {
+        id: 'p17',
+        title: '404 页 · 文案',
+        where: 'not-found.tsx:12',
+        now: '这一页不存在 ／ 可能是链接拼错了，也可能是我把某篇文章删掉了。不管怎样，从这里回去就好。',
+        why: '点错链接的人看到的就是这一页——语气松一点还是稳一点，你定。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p18',
+        title: '页脚 · 那句话',
+        where: 'SiteFooter.tsx:20',
+        now: '路过的人~欢迎你',
+        nowLabel: '上一轮刚按你给的话改的',
+        why: '这半句是你写的，我只是照抄。想提醒一句：「~」这个写法有点像早年的留言板，要调语气就说。',
+      },
+      {
+        id: 'p19',
+        title: '时间线 · 四张卡',
+        where: 'site.ts:40',
+        now: '2026·现在 在做 Peregrine ／ 2026.09 JeRAG 与 Mini-Play ／ 2026.08 三类边界问题回流上游 ／ 2026.07 转到 AI Agent 工程',
+        nowLabel: '首页和关于页共用这一份',
+        why: '这四条是我按仓库的创建时间推的。其中「三类边界问题回流上游」这种说法比较绕。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p20',
+        title: '站点级：tagline 与 SEO 描述',
+        where: 'site.ts:4',
+        now: 'tagline：给 Agent 做工程，也量它的安全边界 ／ 描述：做 AI Agent / RAG / MCP 的工程实现与安全边界。这里放我做过的项目和写过的文章，每个项目都写了为什么做、怎么取舍、结果如何。',
+        nowLabel: '不显示在页面上，但会出现在搜索结果和分享卡片里',
+        why: '别人搜到你、或者把你的链接发出去时，看到的就是这两段。',
+        suggest: { choice: '保留', note: '' },
+      },
+      {
+        id: 'p21',
+        title: '首页 · 「最近」那一条',
+        where: 'site.ts:20',
+        now: '在做 Peregrine · 在读 letta / llama_index / ragflow 的源码 · 不固定更新',
+        nowLabel: '首页那条「最近」，近况页的日期也读这里',
+        why: '和近况页那三张卡讲的是同一件事，措辞不一样。',
+        suggest: { choice: '保留', note: '' },
+      },
+    ],
+  },
+];
+
+/** 固定三选一：所有条目共用同一套，不把可选范围写死 */
+const OPTIONS = ['删除', '保留', '其他'];
+
+/** 卡片右上角的进度徽章 */
+const MARK_LABEL = { applied: '已改', kept: '已定 · 保持原样', pending: '待补文案' };
+
+/* 其他想改的 —— 自由输入 */
+const OTHER = { id: 'z9', title: '其他想改的', where: '', now: '', why: '', suggest: null };
+
+const ALL = GROUPS.flatMap(g => g.items).concat([OTHER]);
+/** 进度只算 21 条正式条目；最后那个自由输入框不计入 */
+const TOTAL = ALL.filter(it => it.id !== 'z9').length;
+const KEY = 'blog-copy-review-2026-10-12';
+
+/* ============================================================
+   状态
+   ============================================================ */
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+
+/* 上一版 p14 的备注写的是提问（「哪一页？我没找到」），不是决定 —— 清掉，避免当成答案导出 */
+if (state.p14 && /我没找到/.test(String(state.p14.note || ''))) state.p14.note = '';
+
+/* 存量里不在三选一之内的选择，一律归到「其他」，备注原样保留 */
+for (const id of Object.keys(state)) {
+  const c = (state[id] && state[id].choice ? String(state[id].choice) : '').trim();
+  if (c && !OPTIONS.includes(c)) state[id].choice = '其他';
+}
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* file:// 下可能被禁用 */ }
+}
+function get(id) { return state[id] || { choice: '', note: '' }; }
+function set(id, patch) {
+  state[id] = Object.assign({ choice: '', note: '' }, get(id), patch);
+  save(); render();
+}
+function doneCount() {
+  return ALL.filter(it => it.id !== 'z9' && (get(it.id).choice || '').trim() !== '').length;
+}
+
+/* ============================================================
+   渲染
+   ============================================================ */
+const groupsEl = document.getElementById('groups');
+let undecidedOnly = false;
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function cardHTML(it) {
+  const st = get(it.id);
+  const isDone = (st.choice || '').trim() !== '';
+  const dim = undecidedOnly && isDone;
+
+  let opts = '';
+  if (it.id !== 'z9') {
+    opts = OPTIONS.map((o) => `
+      <label class="opt">
+        <input type="radio" name="r-${it.id}" value="${esc(o)}" ${st.choice === o ? 'checked' : ''} data-id="${it.id}">
+        <span>${esc(o)}</span>
+      </label>`).join('');
+  }
+
+  let sg = '';
+  if (it.suggest) {
+    const s = it.suggest;
+    const val = s.note ? `，改成「${esc(s.note)}」` : '';
+    sg = `<div class="suggest">
+      <span class="lbl">我的建议</span>
+      <span class="val">${esc(s.choice)}${val}
+        ${it.suggestLabel ? `<br><span style="color:var(--muted)">${esc(it.suggestLabel)}</span>` : ''}
+      </span>
+      <button class="btn btn-sm" data-adopt="${it.id}">采纳</button>
+    </div>`;
+  }
+
+  return `<article class="card ${dim ? 'dim' : ''}" data-done="${isDone ? 1 : 0}" data-id="${it.id}">
+    <div class="card-top">
+      <span class="num">${it.id === 'z9' ? '+' : (it.num || it.id.replace(/^p/, ''))}</span>
+      <h3>${esc(it.title)}</h3>
+      ${it.mark ? `<span class="mark mark-${it.mark}">${MARK_LABEL[it.mark]}</span>` : ''}
+      <span class="where">${esc(it.where)}</span>
+    </div>
+    ${it.now ? `<div class="quote">${it.nowLabel ? `<span class="lb">${esc(it.nowLabel)}</span>` : ''}${esc(it.now)}</div>` : ''}
+    ${it.why ? `<p class="why">${esc(it.why)}</p>` : ''}
+    ${it.id !== 'z9' ? `<fieldset>
+      <legend>你的决定</legend>
+      <div class="opts">${opts}</div>
+    </fieldset>` : ''}
+    <textarea data-note="${it.id}" placeholder="${it.id === 'z9' ? '还有什么想改的，直接写在这里（可以写多行）' : '选「其他」就把新的句子写在这里；选「删除」「保留」也可以补充说明（想写多长都行）'}">${esc(st.note)}</textarea>
+    ${sg}
+  </article>`;
+}
+
+function render() {
+  let html = '';
+  for (const g of GROUPS) {
+    const visible = g.items.filter(it => !(undecidedOnly && (get(it.id).choice || '').trim() !== ''));
+    if (!visible.length) continue;
+    html += `<section class="group">
+      <div class="group-head"><h2>${esc(g.title)}</h2><span class="tag">${esc(g.tag)}</span></div>
+      <p class="group-note">${esc(g.note)}</p>
+      ${visible.map(cardHTML).join('')}
+    </section>`;
+  }
+  html += `<section class="group">
+    <div class="group-head"><h2>五 · 其他</h2><span class="tag">FREE TEXT</span></div>
+    <p class="group-note">上面没覆盖到的，写在这里。</p>
+    ${cardHTML(OTHER)}
+  </section>`;
+  groupsEl.innerHTML = html;
+
+  const n = doneCount();
+  document.getElementById('barfill').style.width = (n / TOTAL * 100) + '%';
+  document.getElementById('count').textContent = n + ' / ' + TOTAL + ' 已定';
+  document.getElementById('count2').textContent = n + ' / ' + TOTAL + ' 已定';
+  buildOutput();
+}
+
+/* ============================================================
+   事件
+   ============================================================ */
+groupsEl.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.type === 'radio' && t.dataset.id) set(t.dataset.id, { choice: t.value });
+});
+
+let noteTimer = null;
+groupsEl.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset && t.dataset.note) {
+    const id = t.dataset.note;
+    state[id] = Object.assign({ choice: '', note: '' }, get(id), { note: t.value });
+    save();
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      const n = doneCount();
+      document.getElementById('barfill').style.width = (n / TOTAL * 100) + '%';
+      document.getElementById('count').textContent = n + ' / ' + TOTAL + ' 已定';
+      document.getElementById('count2').textContent = n + ' / ' + TOTAL + ' 已定';
+      buildOutput();
+    }, 300);
+  }
+});
+
+groupsEl.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-adopt]');
+  if (!b) return;
+  const id = b.dataset.adopt;
+  const item = ALL.find(x => x.id === id);
+  if (!item || !item.suggest) return;
+  set(id, { choice: item.suggest.choice, note: item.suggest.note || '' });
+  const ta = groupsEl.querySelector(`[data-note="${id}"]`);
+  if (ta) ta.value = item.suggest.note || '';
+});
+
+document.getElementById('toggle-undecided').addEventListener('click', (e) => {
+  undecidedOnly = !undecidedOnly;
+  e.currentTarget.setAttribute('aria-pressed', String(undecidedOnly));
+  e.currentTarget.textContent = undecidedOnly ? '显示全部' : '只看未决定的';
+  render();
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm('清空所有选择和填写？这一步不可撤销。')) return;
+  state = {};
+  save();
+  render();
+});
+
+/* ============================================================
+   导出
+   ============================================================ */
+function buildOutput() {
+  const lines = [];
+  lines.push('# 导语与自我介绍 · 我的决定');
+  lines.push('');
+  const n = doneCount();
+  lines.push(`（${n} / ${TOTAL} 条已定；没选的按「保留原样」处理）`);
+  lines.push('');
+
+  for (const g of GROUPS) {
+    const filled = g.items.filter(it => {
+      const st = get(it.id);
+      return (st.choice || '').trim() !== '' || (st.note || '').trim() !== '';
+    });
+    if (!filled.length) continue;
+    lines.push(`## ${g.title}`);
+    lines.push('');
+    for (const it of filled) {
+      const st = get(it.id);
+      const choice = (st.choice || '').trim();
+      const note = (st.note || '').trim();
+      let s = `- **${it.title}**`;
+      if (it.where) s += `（${it.where}）`;
+      if (choice === '其他' && note) {
+        s += ` → 其他：${note}`;
+      } else {
+        s += ` → ${choice || '（没选，但有备注）'}`;
+        if (note) s += `\n  - 备注：${note}`;
+      }
+      lines.push(s);
+    }
+    lines.push('');
+  }
+
+  const other = get('z9');
+  if ((other.note || '').trim() || (other.choice || '').trim()) {
+    lines.push('## 其他想改的');
+    lines.push('');
+    if ((other.choice || '').trim()) lines.push(`- ${other.choice.trim()}`);
+    if ((other.note || '').trim()) lines.push(other.note.trim());
+    lines.push('');
+  }
+
+  document.getElementById('out').value = lines.join('\n');
+}
+
+function flash(msg) {
+  const el = document.getElementById('copied');
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = ''; }, 2200);
+}
+
+async function copyOut() {
+  const text = document.getElementById('out').value;
+  try {
+    await navigator.clipboard.writeText(text);
+    flash('已复制，贴回对话里就行');
+  } catch (err) {
+    const ta = document.getElementById('out');
+    ta.focus(); ta.select();
+    try {
+      document.execCommand('copy');
+      flash('已复制，贴回对话里就行');
+    } catch (e2) {
+      flash('复制失败：手动选中下面的文字按 Ctrl+C 就行');
+    }
+  }
+}
+
+document.getElementById('copy').addEventListener('click', copyOut);
+document.getElementById('copy2').addEventListener('click', copyOut);
+
+document.getElementById('download').addEventListener('click', () => {
+  const blob = new Blob([document.getElementById('out').value], { type: 'text/markdown;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '导语与自我介绍-我的决定.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+/* 首次渲染：把已存的备注回填到 textarea */
+render();
+ALL.forEach(it => {
+  const ta = groupsEl.querySelector(`[data-note="${it.id}"]`);
+  if (ta) ta.value = get(it.id).note || '';
+});
+buildOutput();
+</script>
+</body>
+</html>

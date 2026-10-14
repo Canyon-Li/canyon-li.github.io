@@ -1,0 +1,222 @@
+/* ==========================================================================
+   页面级样式（Next.js 应用层）
+   令牌在 src/styles/tokens.css，通用组件在 src/styles/components.css。
+   本文件只放「某个页面独有的结构样式」——通用组件一律回 components.css 改。
+   目录：A 页头  B 首页 Hero  C 满宽色带（近况条 / 引用插页）与数据带
+        D 项目列表与详情（含首页精选项目的错位栅格）  E 文章页  F 关于页
+        G 表单与标签  H 搜索  I 响应式
+   ========================================================================== */
+
+/* ---------- 0 工具 ---------- */
+/* 组件类里的 display 会盖掉 UA 的 [hidden]，这里补一条，保证 hidden 属性一定生效 */
+[hidden]{display:none !important;}
+
+/* ---------- A 通用页头 ---------- */
+.page-head{padding-top:72px;padding-bottom:var(--sp-7);}
+
+/* ---------- B 首页 Hero（项目优先：紧凑，让项目尽快出现） ---------- */
+.hero{padding-top:72px;padding-bottom:64px;align-items:center;}
+.hero-meta{display:flex;gap:var(--sp-5);flex-wrap:wrap;color:var(--muted);}
+.hero-meta .item{display:flex;align-items:center;gap:var(--sp-2);}
+
+/* 肖像占位：拱形画框 + 几何色块（换成自己的照片即可） */
+.portrait{position:relative;aspect-ratio:4/5;}
+.portrait .layer{position:absolute;display:block;}
+.portrait .p-label{
+  position:absolute;left:22px;top:22px;color:var(--muted);
+  letter-spacing:.14em;font-size:11px;font-family:var(--font-mono);
+}
+.stamp-badge{
+  position:absolute;right:-22px;bottom:-18px;width:116px;height:116px;
+  background:var(--bg);border-radius:50%;padding:6px;
+}
+
+/* ---------- C 近况条与数据带 ---------- */
+.now-bar{
+  border-top:var(--bw-line) solid var(--hair);
+  border-bottom:var(--bw-line) solid var(--hair);
+  background:var(--bg-alt);
+}
+.now-bar .wrap{
+  display:flex;align-items:center;gap:var(--sp-6);
+  padding-top:20px;padding-bottom:20px;flex-wrap:wrap;
+}
+.now-bar .eyebrow{margin:0;}
+.now-bar .text{color:var(--ink-soft);font-size:var(--fs-sm);}
+.now-bar .more{margin-left:auto;}
+
+.stats-band{padding-top:56px;padding-bottom:56px;}
+
+/* 引用插页：满宽木色色带 + 极窄栏宽。
+   它在长页面里承担「一次章节停顿」——上下留白明显大于相邻区块，滚到这里会停一下。
+   注意**不要**做成「正好一屏」：那会在页面上留一个空洞，比屏幕略矮反而更稳。
+   另：居中的引用不需要左侧竖线，`blockquote.pull` 的 border-left 是给左对齐正文用的，
+   在居中版式里它会脱离文字、变成一道孤立的竖线（木色浅底上尤其明显）。 */
+.quote-band{background:var(--wood-tint);padding:clamp(96px,16vw,208px) 0;}
+.quote-band .wrap-narrow{max-width:600px;}
+.quote-band .quote-lg{font-size:clamp(23px,3.2vw,33px);line-height:1.55;}
+.quote-band .pull{border-left:0;padding-left:0;}
+.quote-band .pull cite{color:var(--ink-soft);}
+
+/* ---------- D 项目列表与详情 ---------- */
+
+/* 列表形态但不可点击的行（早期实验没有独立详情页） */
+.posts .row{
+  display:grid;grid-template-columns:auto 104px minmax(0,1fr) auto;
+  align-items:center;gap:var(--sp-5);padding:26px 12px;
+}
+
+.works-toolbar{margin-bottom:var(--sp-6);}
+.works-count{margin-top:var(--sp-6);}
+.grid-list{grid-template-columns:1fr;}
+
+/* 首页精选项目：错位。
+   三张等宽卡是整页里最「平」的一段。改成「一张通栏横向主卡 + 两张副卡」，
+   一段之内就出现了两种尺度，网格被打破。
+   只作用于首页的 `.works-featured`：/works 有筛选，一筛选只剩一两张卡，通栏会很怪。
+   用 min-width 守卫而不是靠底部 max-width 复位 —— components.css 里
+   `.grid-3{grid-template-columns:1fr}` 的窄屏规则在 @media (max-width:860px) 里，
+   与这里是互斥区间，但显式守卫更不容易在后续改动里漏掉。
+   用类而不是 id：DESIGN.md §11 禁止拿 id 做样式钩子。 */
+@media (min-width:861px){
+  .works-featured .grid-3{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .works-featured .grid-3 > .card:first-child{
+    grid-column:1 / -1;
+    display:grid;grid-template-columns:1.15fr 1fr;min-height:340px;
+  }
+  /* 主卡封面取消 16:10，改由栅格行高决定，与右侧文字栏等高、左右边线对齐 */
+  .works-featured .grid-3 > .card:first-child .thumb{aspect-ratio:auto;height:100%;}
+  .works-featured .grid-3 > .card:first-child .pad{
+    display:flex;flex-direction:column;justify-content:center;
+    padding:clamp(28px,3vw,48px);
+  }
+}
+
+.proj-head{
+  display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);
+  gap:var(--sp-8);align-items:start;
+}
+.stack-row{display:flex;flex-wrap:wrap;gap:var(--sp-2);}
+.proj-body{padding-top:var(--sp-8);padding-bottom:var(--sp-9);}
+
+/* 侧栏目录与信息 */
+.toc-title{margin-bottom:10px;letter-spacing:.06em;}
+.info-list{font-size:13.5px;}
+.info-list .row{
+  display:flex;justify-content:space-between;gap:var(--sp-4);
+  padding:7px 0;border-bottom:var(--bw-line) solid var(--hair-soft);
+}
+.info-list .row:last-child{border-bottom:0;}
+.info-list dt{color:var(--muted);}
+.info-list a{color:var(--wood-dark);}
+
+/* 演示图：几何块拼出的界面示意（占位，替换成真实截图即可） */
+.mock-app{width:100%;height:100%;display:flex;background:var(--bg);}
+.mock-side{
+  width:34%;border-right:var(--bw-line) solid var(--hair);
+  padding:var(--sp-5);display:flex;flex-direction:column;gap:10px;
+}
+.mock-main{flex:1;padding:var(--sp-5);display:flex;flex-direction:column;gap:10px;}
+.mock-row{height:8px;border-radius:4px;background:var(--hair-strong);}
+.mock-card{
+  border:var(--bw-hair) solid var(--hair);border-radius:var(--r-sm);
+  padding:var(--sp-4);background:var(--surface);
+}
+
+/* ---------- E 文章页 ---------- */
+.post-head{padding-top:56px;padding-bottom:var(--sp-7);}
+.post-body{padding-top:var(--sp-7);padding-bottom:var(--sp-9);}
+
+/* ---------- F 关于页 ---------- */
+.about-row{
+  display:flex;justify-content:space-between;gap:20px;
+  padding:15px 0;border-bottom:var(--bw-line) solid var(--hair);font-size:14px;
+}
+.about-row:last-child{border-bottom:0;}
+.about-row dt{color:var(--muted);}
+
+/* 大字引用 */
+.quote-lg{border:0;padding:0;font-size:clamp(20px,2.6vw,27px);line-height:1.7;}
+
+/* ---------- G 表单与标签 ---------- */
+.form-note{font-size:var(--fs-sm);color:var(--muted);margin-top:var(--sp-3);min-height:1.5em;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:var(--sp-3);}
+.tag-cloud .tag{font-size:var(--fs-sm);padding:7px 15px;}
+
+/* ---------- H 搜索 ---------- */
+
+/* 顶栏里的触发按钮：图标按钮 44px（规范 07 节） */
+.nav-search{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  border:var(--bw-line) solid transparent;background:transparent;border-radius:var(--r-full);
+  color:var(--ink-soft);cursor:pointer;
+  transition:background var(--dur-1) var(--ease),border-color var(--dur-1) var(--ease),
+             color var(--dur-1) var(--ease);
+}
+.nav-search:hover{background:var(--surface);border-color:var(--hair-strong);color:var(--ink);}
+
+.search-panel{
+  position:fixed;inset:0;z-index:var(--z-modal);
+  display:flex;justify-content:center;align-items:flex-start;
+  padding:12vh var(--gutter) var(--sp-6);
+  background:rgba(51,48,44,.28);
+  backdrop-filter:blur(3px);
+}
+.search-panel-inner{
+  width:100%;max-width:640px;display:flex;flex-direction:column;max-height:76vh;
+  background:var(--bg);border:var(--bw-hair) solid var(--hair);
+  border-radius:var(--r-lg);box-shadow:var(--shadow-lg);overflow:hidden;
+}
+.search-head{padding:var(--sp-4) var(--sp-5);border-bottom:var(--bw-line) solid var(--hair);flex:none;}
+.search-head .search .input{
+  border-color:transparent;background:transparent;
+  font-size:var(--fs-lg);padding-left:42px;
+}
+.search-head .search .input:focus{background:transparent;border-color:transparent;}
+.search-head .search svg{width:18px;height:18px;}
+
+.search-body{overflow-y:auto;padding:var(--sp-2);}
+.search-hit{
+  display:block;padding:var(--sp-4);border-radius:var(--r-md);
+  transition:background var(--dur-1) var(--ease);
+}
+.search-hit:hover,.search-hit[aria-selected="true"]{background:var(--surface);}
+.search-hit .t{display:block;font-size:var(--fs-h4);font-weight:var(--fw-medium);}
+.search-hit .d{display:block;font-size:var(--fs-sm);color:var(--muted);margin-top:5px;line-height:1.7;}
+.search-hit .m{
+  display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;
+  margin-top:var(--sp-3);font-size:var(--fs-cap);color:var(--muted);
+}
+.search-hit mark{background:var(--wood-tint);color:var(--ink);border-radius:3px;padding:0 2px;}
+
+.search-empty{padding:var(--sp-8) var(--sp-5);text-align:center;color:var(--muted);font-size:var(--fs-sm);}
+.search-empty .orn{margin:0 auto var(--sp-4);}
+.search-empty a{color:var(--wood-dark);border-bottom:var(--bw-line) solid var(--hair-strong);}
+
+.search-foot{
+  display:flex;align-items:center;gap:var(--sp-5);flex-wrap:wrap;flex:none;
+  padding:var(--sp-3) var(--sp-5);border-top:var(--bw-line) solid var(--hair);
+  font-size:var(--fs-cap);color:var(--muted);background:var(--bg-alt);
+}
+.search-foot .kbd{margin-right:2px;}
+.search-foot .meta{margin-left:auto;}
+
+/* ---------- I 响应式 ---------- */
+@media (max-width:900px){
+  .proj-head{grid-template-columns:1fr;gap:var(--sp-6);}
+}
+@media (max-width:860px){
+  .hero{padding-top:var(--sp-8);padding-bottom:var(--sp-7);}
+  .page-head{padding-top:var(--sp-8);}
+  .post-head{padding-top:var(--sp-7);}
+  .stamp-badge{display:none;}
+  .now-bar .more{margin-left:0;}
+  .stats-band{padding-top:var(--sp-7);padding-bottom:var(--sp-7);}
+  .posts .row{grid-template-columns:1fr;gap:var(--sp-2);padding:22px 6px;}
+  .posts .row .idx{display:none;}
+
+  /* 搜索面板贴到顶部，少留白；键盘提示在触屏上没有意义 */
+  .search-panel{padding:var(--sp-6) var(--gutter-sm) var(--sp-4);}
+  .search-panel-inner{max-height:82vh;}
+  .search-keys{display:none;}
+}

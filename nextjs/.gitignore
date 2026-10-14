@@ -1,0 +1,14 @@
+node_modules
+.next
+# 构建被中断时把 .next 改名留下的缓存副本（Next 的 lock 会让下次构建直接失败）
+.next-stale*
+out
+next-env.d.ts
+*.tsbuildinfo
+*.log
+.DS_Store
+.env
+.env.local
+
+# 本地截图（scripts/shot.mjs 的产物）
+.preview

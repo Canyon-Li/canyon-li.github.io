@@ -1,0 +1,22 @@
+# 依赖与构建产物（nextjs/.gitignore 已覆盖 nextjs/ 内部，这里兜底 + 覆盖仓库根）
+node_modules/
+.next/
+out/
+out-*/
+*.tsbuildinfo
+next-env.d.ts
+
+# 本地截图（scripts/shot.mjs 的产物）
+.preview/
+
+# 环境变量
+.env
+.env.local
+
+# AI 协作工作目录：含本地笔记与记忆，不进公开仓库
+.workbuddy-ai/
+
+# 系统与编辑器
+.DS_Store
+Thumbs.db
+*.log

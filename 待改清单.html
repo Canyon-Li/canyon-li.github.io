@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>待改清单 · 逐个定夺</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#FBF8F3; --bg-alt:#F5F0E8; --surface:#FFF;
+  --ink:#33302C; --ink-soft:#5C564E; --muted:#6C655D; --muted-2:#A79F93;
+  --wood:#DDB78C; --wood-deep:#C08F5E; --wood-strong:#A87A46; --wood-dark:#7E5530; --wood-tint:#F3E4D1;
+  --sage:#9BAE9B; --sage-deep:#6F8069; --sage-text:#5C6B57; --sage-tint:#EAF0E7;
+  --danger:#9E4636; --danger-tint:#F5E6E1;
+  --hair:rgba(51,48,44,.12); --hair-strong:rgba(51,48,44,.24); --hair-field:rgba(51,48,44,.57);
+  --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --font-mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --r-sm:8px; --r-md:12px; --r-lg:18px; --r-full:999px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font-sans);font-size:16px;line-height:1.75;font-weight:400;
+}
+.wrap{max-width:900px;margin:0 auto;padding:0 24px}
+code,.mono{font-family:var(--font-mono)}
+
+/* ---------- 头部 ---------- */
+header.top{padding:56px 0 28px;border-bottom:1px solid var(--hair)}
+h1{font-size:clamp(26px,3.4vw,34px);line-height:1.3;font-weight:500;margin:0 0 14px}
+.lede{color:var(--ink-soft);margin:0 0 22px;max-width:62ch}
+.howto{background:var(--wood-tint);border-radius:var(--r-md);padding:14px 18px;font-size:14px;color:var(--ink-soft)}
+.howto b{color:var(--wood-dark);font-weight:500}
+
+/* ---------- 进度 ---------- */
+.progress{display:flex;align-items:center;gap:14px;margin-top:24px;flex-wrap:wrap}
+.bar{flex:1;min-width:160px;height:6px;background:var(--bg-alt);border-radius:var(--r-full);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--wood-deep);transition:width .28s var(--ease)}
+.count{font-family:var(--font-mono);font-size:13px;color:var(--muted);white-space:nowrap}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+
+/* ---------- 按钮 ---------- */
+button{font:inherit;cursor:pointer}
+.btn{
+  border:1px solid var(--hair-strong);background:transparent;color:var(--ink);
+  border-radius:var(--r-full);padding:7px 16px;font-size:13.5px;
+  transition:background .18s var(--ease),border-color .18s var(--ease),transform .18s var(--ease);
+}
+.btn:hover{background:var(--surface);border-color:var(--hair-field);transform:translateY(-1px)}
+.btn:focus-visible{outline:2px solid var(--wood-strong);outline-offset:2px}
+.btn-solid{background:var(--wood-deep);border-color:var(--wood-deep);color:#fff}
+.btn-solid:hover{background:var(--wood-strong);border-color:var(--wood-strong)}
+.btn-sm{padding:4px 11px;font-size:12.5px}
+.btn[aria-pressed="true"]{background:var(--wood-tint);border-color:var(--wood-strong)}
+
+/* ---------- 分组 ---------- */
+section.group{padding:44px 0 0}
+.group-head{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.group-head h2{font-size:19px;font-weight:500;margin:0}
+.group-head .tag{
+  font-size:11px;font-family:var(--font-mono);letter-spacing:.06em;
+  border:1px solid var(--hair-strong);border-radius:var(--r-full);padding:2px 9px;color:var(--muted);
+}
+.group-note{color:var(--muted);font-size:13.5px;margin:0 0 20px}
+
+/* ---------- 卡片 ---------- */
+.card{
+  background:var(--surface);border:.5px solid var(--hair);border-radius:var(--r-lg);
+  padding:22px 24px;margin-bottom:16px;transition:opacity .2s var(--ease);
+}
+.card[data-done="1"]{border-color:var(--wood);background:#FFFDFA}
+.card.dim{opacity:.45}
+.card-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:12px}
+.num{
+  font-family:var(--font-mono);font-size:12px;line-height:1;
+  min-width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:var(--r-full);background:var(--bg-alt);color:var(--muted);flex:none;
+}
+.card[data-done="1"] .num{background:var(--wood-deep);color:#fff}
+.card h3{font-size:16px;font-weight:500;margin:0;flex:1;line-height:1.5}
+.where{
+  font-family:var(--font-mono);font-size:11.5px;color:var(--muted);
+  border:1px solid var(--hair);border-radius:var(--r-sm);padding:2px 7px;white-space:nowrap;
+}
+.where:empty{display:none}
+
+.quote{
+  background:var(--bg-alt);border-radius:var(--r-md);padding:12px 16px;
+  font-size:14.5px;color:var(--ink-soft);margin:0 0 12px;
+  border-left:2px solid var(--wood);
+}
+.quote .lb{color:var(--muted);font-size:12.5px;font-family:var(--font-mono);display:block;margin-bottom:4px}
+.why{font-size:13.5px;color:var(--muted);margin:0 0 16px}
+.why b{color:var(--danger);font-weight:500}
+
+fieldset{border:0;padding:0;margin:0 0 12px}
+legend{font-size:12.5px;color:var(--muted);font-family:var(--font-mono);letter-spacing:.04em;padding:0 0 8px}
+.opts{display:flex;gap:8px;flex-wrap:wrap}
+.opt{
+  display:inline-flex;align-items:center;gap:7px;border:1px solid var(--hair-strong);
+  border-radius:var(--r-full);padding:6px 14px;font-size:13.5px;cursor:pointer;
+  transition:background .18s var(--ease),border-color .18s var(--ease);
+}
+.opt:hover{background:var(--bg-alt)}
+.opt input{accent-color:var(--wood-strong);margin:0;width:15px;height:15px;flex:none}
+.opt:has(input:checked){background:var(--wood-tint);border-color:var(--wood-strong);color:var(--wood-dark)}
+.opt:has(input:focus-visible){outline:2px solid var(--wood-strong);outline-offset:2px}
+
+textarea{
+  width:100%;font:inherit;font-size:14px;color:var(--ink);
+  background:var(--bg);border:1px solid var(--hair-field);border-radius:var(--r-sm);
+  padding:10px 12px;resize:vertical;min-height:44px;line-height:1.7;
+}
+textarea:focus-visible{outline:2px solid var(--wood-strong);outline-offset:1px}
+textarea::placeholder{color:var(--muted-2)}
+.suggest{
+  display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap;
+  margin-top:12px;padding-top:12px;border-top:1px dashed var(--hair);
+  font-size:13.5px;color:var(--sage-text);
+}
+.suggest .lbl{font-family:var(--font-mono);font-size:11.5px;color:var(--sage-deep);white-space:nowrap;padding-top:3px}
+.suggest .val{flex:1;min-width:180px}
+
+/* ---------- 导出 ---------- */
+section.export{margin:56px 0 0;padding:28px 0 0;border-top:1px solid var(--hair)}
+.out{
+  width:100%;min-height:240px;font-family:var(--font-mono);font-size:12.5px;line-height:1.75;
+  background:var(--bg-alt);border:1px solid var(--hair-field);border-radius:var(--r-md);padding:14px;
+  white-space:pre;overflow:auto;
+}
+.hint{font-size:13px;color:var(--muted);margin:10px 0 0}
+.ok{color:var(--sage-text)}
+
+/* ---------- 底栏 ---------- */
+.bar-fixed{
+  position:fixed;left:0;right:0;bottom:0;z-index:60;
+  background:rgba(251,248,243,.94);backdrop-filter:blur(8px);
+  border-top:1px solid var(--hair);
+}
+.bar-fixed .wrap{display:flex;align-items:center;gap:14px;padding:12px 24px;flex-wrap:wrap}
+.bar-fixed .count{margin-right:auto}
+main{padding-bottom:120px}
+
+@media (max-width:640px){
+  header.top{padding:36px 0 22px}
+  .card{padding:18px 16px}
+  .where{display:none}
+  .bar-fixed .wrap{padding:10px 16px;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <h1>待改清单 · 逐个定夺</h1>
+    <p class="lede">
+      这些是站点上「不是你写的」或者「写给开发者看」的文字。每条都标了位置和原文，
+      你只要选一个处理方式：<b>删除</b>、<b>保留</b>，或者 <b>其他</b>——选「其他」就把你想怎么做写进框里。
+      想补充说明也随时可以写。
+    </p>
+    <div class="howto">
+      填完往下拉到底，点 <b>复制我的决定</b>，把结果贴回对话里就行。
+      中途关掉页面不会丢——选择存在本机浏览器里。
+    </div>
+
+    <div class="progress">
+      <div class="bar"><i id="barfill"></i></div>
+      <span class="count" id="count" aria-live="polite">0 / 15 已定</span>
+    </div>
+
+    <div class="tools">
+      <button class="btn btn-sm" id="toggle-undecided" aria-pressed="false">只看未决定的</button>
+      <button class="btn btn-sm" id="reset">全部清空</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="groups"></main>
+
+<section class="export wrap" id="export-sec">
+  <h2 style="font-size:19px;font-weight:500;margin:0 0 6px">我的决定</h2>
+  <p class="hint" style="margin:0 0 14px">
+    下面这段是自动生成的。点按钮复制，或者直接手动选中复制。
+  </p>
+  <div class="tools" style="margin:0 0 14px">
+    <button class="btn btn-solid" id="copy">复制我的决定</button>
+    <button class="btn" id="download">下载成 .md</button>
+    <span class="hint ok" id="copied" style="margin:0;align-self:center"></span>
+  </div>
+  <textarea class="out" id="out" readonly aria-label="我的决定（可复制）"></textarea>
+</section>
+
+<div class="bar-fixed">
+  <div class="wrap">
+    <span class="count" id="count2" aria-live="polite">0 / 15 已定</span>
+    <button class="btn btn-sm" id="copy2">复制我的决定</button>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   数据：每条一个决定
+   ============================================================ */
+const GROUPS = [
+  {
+    key: 'leftover',
+    title: '一 · 开发残留',
+    tag: 'DEV LEFTOVER',
+    note: '写给开发者看的话，却出现在访客面前。建议全部处理掉。',
+    items: [
+      {
+        id: 'a1',
+        title: '项目详情页 · 封面图注',
+        where: 'works/[slug]/page.tsx:168',
+        now: '图 1 · 主界面示意。换成你自己的截图即可：16:10、浅色衬底，深色截图也不会显得刺眼。',
+        nowLabel: '5 个项目详情页都有',
+        why: '这是写给你的操作说明。访客看到「换成你自己的截图即可」会一头雾水。',
+        suggest: { choice: '其他', note: '图 1 · Peregrine 主界面。' },
+        suggestLabel: '没有截图时就干脆不显示图注；有截图时写成「图 1 · 项目名 主界面。」',
+      },
+      {
+        id: 'a2',
+        title: '项目详情页 · 侧栏便签',
+        where: 'works/[slug]/page.tsx:202',
+        now: '这一页也是模板：换掉文字和截图，就是你自己的项目页。',
+        nowLabel: '5 个项目详情页都有',
+        why: '它直接告诉访客「这是模板」——等于承认站点还没做完。',
+        suggest: { choice: '删除', note: '' },
+      },
+      {
+        id: 'a3',
+        title: '订阅框 · 点「订阅」之后的提示',
+        where: 'Subscribe.tsx:39',
+        now: '这是静态演示站：表单还没有接订阅服务，换成你自己的接口就能用。',
+        nowLabel: '6 个页面都有订阅框',
+        why: '访客点了「订阅」，收到的却是给开发者看的说明，会以为网站坏了。',
+        suggest: { choice: '其他', note: '订阅还没开放。想第一时间知道更新，直接写信给我更快。' },
+        suggestLabel: '也可以整块删掉——目前没有后端，订阅框其实收不到东西。',
+      },
+      {
+        id: 'a4',
+        title: '首页 · 首屏画像框左上角',
+        where: 'page.tsx:111（样式 globals.css:25）',
+        now: 'PORTRAIT',
+        nowLabel: '竖排小字，确实看得见',
+        why: '本来是等真实照片的占位标签。',
+        suggest: { choice: '其他', note: 'AGENT · RAG · SECURITY' },
+        suggestLabel: '删除最干净；想保留这个装饰位置就换成你的关键词。',
+      },
+      {
+        id: 'a5',
+        title: '首页 · 圆形印章里的环字',
+        where: 'page.tsx:122',
+        now: 'SLOW LIVING · SLOW WRITING ·',
+        nowLabel: '绕着圆形转的一圈小字',
+        why: '原型时期的口号（「慢生活 · 慢写作」），跟现在的你没关系。',
+        suggest: { choice: '其他', note: 'BUILD AGENTS · MEASURE BOUNDARIES ·' },
+      },
+      {
+        id: 'a6',
+        title: '首页 · 「关于我」栏目里的便签',
+        where: 'page.tsx:304',
+        now: '通常晚上回邮件，白天在改稿。急事请直接打电话。',
+        why: '原型人物（林舟）的作息。而且站上根本没有电话——「急事请打电话」是句空话。',
+        suggest: { choice: '其他', note: '回信通常在两三天内。' },
+        suggestLabel: '写信的人真正想知道的是「多久能收到回音」，不是你的作息。',
+      },
+      {
+        id: 'a7',
+        title: '首页 · 引用块的落款',
+        where: 'page.tsx:243',
+        now: '五个项目的源码都在 GitHub 上',
+        why: '数量写死了（你说过别提数量，以后一直要改）；而且它跟上面那句正文对不上。',
+        suggest: { choice: '其他', note: '—— 源码都在 GitHub 上' },
+      },
+      {
+        id: 'a8',
+        title: '/now 页 · 「这一页是怎么来的」整节',
+        where: 'now/page.tsx:132',
+        now: '解释 /now 这个惯例是什么、为什么这么写（三小段，约 150 字）',
+        why: '它在讲网站本身，不是讲你。这条不算错，留不留看你。',
+        suggest: { choice: '保留', note: '' },
+        suggestLabel: '写得挺自然，读起来像在解释一个习惯，不像残留。我倾向保留。',
+      },
+    ],
+  },
+  {
+    key: 'conflict',
+    title: '二 · 自相矛盾',
+    tag: 'CONFLICT',
+    note: '不是残留，是两句并排读起来打架。',
+    items: [
+      {
+        id: 'c1',
+        title: '页脚 · 「所有文字都是手写的，没有代笔」',
+        where: 'SiteFooter.tsx:21',
+        now: '用纸和光做的网站。所有文字都是手写的，没有代笔。',
+        why: '实际上全站文案都是我写的——包括这一句。这句等于不实。',
+        suggest: { choice: '其他', note: '用纸和光做的网站。' },
+      },
+      {
+        id: 'c2',
+        title: '页脚「保留所有权利」 vs 关于页「文章可以转载」',
+        where: 'SiteFooter.tsx:76 ↔ about/page.tsx:251',
+        now: '页脚：© 2026 Canyon · 保留所有权利　／　关于页 FAQ：文章可以转载，注明出处就行',
+        why: '「保留所有权利」的意思是「不许转载」，和关于页那句直接冲突。',
+        suggest: { choice: '其他', note: '© 2026 Canyon · 文字 CC BY-NC-SA 4.0，代码 MIT' },
+        suggestLabel: '这样两句就不打架了：代码 MIT、文章允许转载但要求署名。',
+      },
+    ],
+  },
+  {
+    key: 'mine',
+    title: '三 · 我替你写的（要不要动）',
+    tag: 'WRITTEN BY ME',
+    note: '这些不是残留，是我替你写的文字。事实对不对、话该不该这么说，只有你知道。',
+    items: [
+      {
+        id: 'b1',
+        title: '订阅框里的三条承诺',
+        where: 'Subscribe.tsx:12 / :52，works/page.tsx:51',
+        now: '「不发广告，随时可以退订。」「同时接收每月一次的『读到的好东西』」「大概两三个月一个，不发广告。」',
+        why: '我替你许的诺。尤其是「每月一次」——你真能每月发一封吗？',
+        suggest: { choice: '其他', note: '删掉「每月一次」那个勾选框' },
+      },
+      {
+        id: 'b2',
+        title: '关于页 · 「没有评论、没有统计、没有花哨的动效」',
+        where: 'about/page.tsx:41',
+        now: '这个网站没有评论、没有统计、没有花哨的动效。它只是一张摊开的桌子，上面放着我在意的东西。',
+        why: '我写的。事实对不对你清楚（页面里其实有滚动入场动效）。',
+        suggest: { choice: '保留', note: '' },
+        suggestLabel: '「没有统计」是真的，「没有动效」严格说不太准（有滚动入场）。',
+      },
+      {
+        id: 'b3',
+        title: '数据条 · 「3 次合并到上游」',
+        where: 'page.tsx:180 / about/page.tsx:115',
+        now: '数字「3」写死在代码里',
+        why: '不会自动更新。PR 多一个就得手动改。',
+        suggest: { choice: '保留', note: '' },
+        suggestLabel: '另外两格（项目数、文章数）是按文件自动算的，不会过期，那个没问题。',
+      },
+      {
+        id: 'b4',
+        title: '5 篇样例文章',
+        where: 'content/posts/',
+        now: '5 篇。其中 fts5-chinese-search 和 local-first 讲的是「读记」这个不存在的项目，还带 series: 读记开发笔记',
+        why: '这两篇一旦被读到，会让人以为「读记」是你的项目。',
+        suggest: { choice: '其他', note: '删掉讲「读记」的两篇：fts5-chinese-search、local-first' },
+        suggestLabel: '另外三篇（暖白背景、留白、WordPress 搬迁）不涉及虚构项目，可以留着。',
+      },
+      {
+        id: 'b5',
+        title: '各页导语与自我介绍',
+        where: '首页 / 关于 / 项目 / 文章 / 归档 / 近况',
+        now: '每个页面开头的那段「导语」，以及首页和关于页的自我介绍——全是我写的',
+        why: '这些决定了别人对你的第一印象，最该你自己读一遍。',
+        suggest: { choice: '保留', note: '' },
+        suggestLabel: '选「我逐条给改法」的话，把要改的句子写在框里（写清楚是哪个页面）。',
+      },
+    ],
+  },
+];
+
+/** 固定三选一：所有条目共用同一套，不把可选范围写死 */
+const OPTIONS = ['删除', '保留', '其他'];
+
+/* 其他想改的 —— 自由输入 */
+const OTHER = { id: 'z9', title: '其他想改的', where: '', now: '', why: '', suggest: null };
+
+const ALL = GROUPS.flatMap(g => g.items).concat([OTHER]);
+/** 进度只算 15 条正式条目；最后那个自由输入框不计入 */
+const TOTAL = ALL.filter(it => it.id !== 'z9').length;
+const KEY = 'blog-review-2026-10-12';
+
+/* ============================================================
+   状态
+   ============================================================ */
+let state = {};
+try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+
+/* 兼容早先的选择：以前每条的可选范围不一样，现在统一成三选一。
+   存量里不在三选一之内的，一律归到「其他」，备注原样保留。 */
+for (const id of Object.keys(state)) {
+  const c = (state[id] && state[id].choice ? String(state[id].choice) : '').trim();
+  if (c && !OPTIONS.includes(c)) state[id].choice = '其他';
+}
+
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* file:// 下可能被禁用 */ }
+}
+function get(id) { return state[id] || { choice: '', note: '' }; }
+function set(id, patch) {
+  state[id] = Object.assign({ choice: '', note: '' }, get(id), patch);
+  save(); render();
+}
+function doneCount() {
+  return ALL.filter(it => it.id !== 'z9' && (get(it.id).choice || '').trim() !== '').length;
+}
+
+/* ============================================================
+   渲染
+   ============================================================ */
+const groupsEl = document.getElementById('groups');
+let undecidedOnly = false;
+
+function esc(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function cardHTML(it) {
+  const st = get(it.id);
+  const isDone = (st.choice || '').trim() !== '';
+  const dim = undecidedOnly && isDone;
+
+  let opts = '';
+  if (it.id !== 'z9') {
+    opts = OPTIONS.map((o) => `
+      <label class="opt">
+        <input type="radio" name="r-${it.id}" value="${esc(o)}" ${st.choice === o ? 'checked' : ''} data-id="${it.id}">
+        <span>${esc(o)}</span>
+      </label>`).join('');
+  }
+
+  let sg = '';
+  if (it.suggest) {
+    const s = it.suggest;
+    const val = s.note ? `，改成「${esc(s.note)}」` : '';
+    sg = `<div class="suggest">
+      <span class="lbl">我的建议</span>
+      <span class="val">${esc(s.choice)}${val}
+        ${it.suggestLabel ? `<br><span style="color:var(--muted)">${esc(it.suggestLabel)}</span>` : ''}
+      </span>
+      <button class="btn btn-sm" data-adopt="${it.id}">采纳</button>
+    </div>`;
+  }
+
+  return `<article class="card ${dim ? 'dim' : ''}" data-done="${isDone ? 1 : 0}" data-id="${it.id}">
+    <div class="card-top">
+      <span class="num">${it.id === 'z9' ? '+' : (ALL.indexOf(it) + 1)}</span>
+      <h3>${esc(it.title)}</h3>
+      <span class="where">${esc(it.where)}</span>
+    </div>
+    ${it.now ? `<div class="quote">${it.nowLabel ? `<span class="lb">${esc(it.nowLabel)}</span>` : ''}${esc(it.now)}</div>` : ''}
+    ${it.why ? `<p class="why">${esc(it.why)}</p>` : ''}
+    ${it.id !== 'z9' ? `<fieldset>
+      <legend>你的决定</legend>
+      <div class="opts">${opts}</div>
+    </fieldset>` : ''}
+    <textarea data-note="${it.id}" placeholder="${it.id === 'z9' ? '还有什么想改的，直接写在这里（可以写多行）' : '选了「其他」就把你想怎么做写在这里；选「删除」「保留」也可以补充说明（想写多长都行）'}">${esc(st.note)}</textarea>
+    ${sg}
+  </article>`;
+}
+
+function render() {
+  let html = '';
+  for (const g of GROUPS) {
+    const visible = g.items.filter(it => !(undecidedOnly && (get(it.id).choice || '').trim() !== ''));
+    if (!visible.length) continue;
+    html += `<section class="group">
+      <div class="group-head"><h2>${esc(g.title)}</h2><span class="tag">${esc(g.tag)}</span></div>
+      <p class="group-note">${esc(g.note)}</p>
+      ${visible.map(cardHTML).join('')}
+    </section>`;
+  }
+  html += `<section class="group">
+    <div class="group-head"><h2>四 · 其他</h2><span class="tag">FREE TEXT</span></div>
+    <p class="group-note">上面没覆盖到的，写在这里。</p>
+    ${cardHTML(OTHER)}
+  </section>`;
+  groupsEl.innerHTML = html;
+
+  const n = doneCount();
+  document.getElementById('barfill').style.width = (n / TOTAL * 100) + '%';
+  document.getElementById('count').textContent = n + ' / ' + TOTAL + ' 已定';
+  document.getElementById('count2').textContent = n + ' / ' + TOTAL + ' 已定';
+  buildOutput();
+}
+
+/* ============================================================
+   事件
+   ============================================================ */
+groupsEl.addEventListener('change', (e) => {
+  const t = e.target;
+  if (t.type === 'radio' && t.dataset.id) set(t.dataset.id, { choice: t.value });
+});
+
+let noteTimer = null;
+groupsEl.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset && t.dataset.note) {
+    const id = t.dataset.note;
+    state[id] = Object.assign({ choice: '', note: '' }, get(id), { note: t.value });
+    save();
+    clearTimeout(noteTimer);
+    noteTimer = setTimeout(() => {
+      const n = doneCount();
+      document.getElementById('barfill').style.width = (n / TOTAL * 100) + '%';
+      document.getElementById('count').textContent = n + ' / ' + TOTAL + ' 已定';
+      document.getElementById('count2').textContent = n + ' / ' + TOTAL + ' 已定';
+      buildOutput();
+    }, 300);
+  }
+});
+
+groupsEl.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-adopt]');
+  if (!b) return;
+  const id = b.dataset.adopt;
+  const item = ALL.find(x => x.id === id);
+  if (!item || !item.suggest) return;
+  set(id, { choice: item.suggest.choice, note: item.suggest.note || '' });
+  const ta = groupsEl.querySelector(`[data-note="${id}"]`);
+  if (ta) ta.value = item.suggest.note || '';
+});
+
+document.getElementById('toggle-undecided').addEventListener('click', (e) => {
+  undecidedOnly = !undecidedOnly;
+  e.currentTarget.setAttribute('aria-pressed', String(undecidedOnly));
+  e.currentTarget.textContent = undecidedOnly ? '显示全部' : '只看未决定的';
+  render();
+});
+
+document.getElementById('reset').addEventListener('click', () => {
+  if (!confirm('清空所有选择和填写？这一步不可撤销。')) return;
+  state = {};
+  save();
+  render();
+});
+
+/* ============================================================
+   导出
+   ============================================================ */
+function buildOutput() {
+  const lines = [];
+  lines.push('# 待改清单 · 我的决定');
+  lines.push('');
+  const n = doneCount();
+  lines.push(`（${n} / ${TOTAL} 条已定；没选的按「保留原样」处理）`);
+  lines.push('');
+
+  for (const g of GROUPS) {
+    const filled = g.items.filter(it => {
+      const st = get(it.id);
+      return (st.choice || '').trim() !== '' || (st.note || '').trim() !== '';
+    });
+    if (!filled.length) continue;
+    lines.push(`## ${g.title}`);
+    lines.push('');
+    for (const it of filled) {
+      const st = get(it.id);
+      const choice = (st.choice || '').trim();
+      const note = (st.note || '').trim();
+      let s = `- **${it.title}**`;
+      if (it.where) s += `（${it.where}）`;
+      if (choice === '其他' && note) {
+        s += ` → 其他：${note}`;
+      } else {
+        s += ` → ${choice || '（没选，但有备注）'}`;
+        if (note) s += `\n  - 备注：${note}`;
+      }
+      lines.push(s);
+    }
+    lines.push('');
+  }
+
+  const other = get('z9');
+  if ((other.note || '').trim() || (other.choice || '').trim()) {
+    lines.push('## 其他想改的');
+    lines.push('');
+    if ((other.choice || '').trim()) lines.push(`- ${other.choice.trim()}`);
+    if ((other.note || '').trim()) lines.push(other.note.trim());
+    lines.push('');
+  }
+
+  document.getElementById('out').value = lines.join('\n');
+}
+
+function flash(msg) {
+  const el = document.getElementById('copied');
+  el.textContent = msg;
+  setTimeout(() => { el.textContent = ''; }, 2200);
+}
+
+async function copyOut() {
+  const text = document.getElementById('out').value;
+  try {
+    await navigator.clipboard.writeText(text);
+    flash('已复制，贴回对话里就行');
+  } catch (err) {
+    const ta = document.getElementById('out');
+    ta.focus(); ta.select();
+    try {
+      document.execCommand('copy');
+      flash('已复制，贴回对话里就行');
+    } catch (e2) {
+      flash('复制失败：手动选中下面的文字按 Ctrl+C 就行');
+    }
+  }
+}
+
+document.getElementById('copy').addEventListener('click', copyOut);
+document.getElementById('copy2').addEventListener('click', copyOut);
+
+document.getElementById('download').addEventListener('click', () => {
+  const blob = new Blob([document.getElementById('out').value], { type: 'text/markdown;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '待改清单-我的决定.md';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+/* 首次渲染：把已存的备注回填到 textarea */
+render();
+ALL.forEach(it => {
+  const ta = groupsEl.querySelector(`[data-note="${it.id}"]`);
+  if (ta) ta.value = get(it.id).note || '';
+});
+buildOutput();
+</script>
+</body>
+</html>
