@@ -44,7 +44,11 @@ jobs:
           NEXT_PUBLIC_SITE_URL: https://canyon-li.github.io
 
       - name: 自检（内容与链接）
-        run: npm run verify
+        run: |
+          # verify.mjs 需要 127.0.0.1:4173 上有静态服务器，本地是另开终端跑 preview，CI 里在这里起
+          node scripts/serve.mjs out 4173 &
+          sleep 1
+          npm run verify
 
       - uses: actions/configure-pages@v5
 
