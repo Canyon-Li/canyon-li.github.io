@@ -1,4 +1,4 @@
-# 林舟 · 个人网站（Next.js 版）
+# Canyon · 个人网站（Next.js 版）
 
 把 `../` 里的静态原型（`index.html` / `works.html` / `work.html` / `components.html`）
 落地成一个真实可运行、可部署的项目。设计语言与 `../DESIGN.md` 一致：**北欧暖木**。

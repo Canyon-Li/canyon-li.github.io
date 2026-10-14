@@ -2,7 +2,7 @@
   "name": "warm-wood-blog",
   "version": "1.0.0",
   "private": true,
-  "description": "林舟的个人网站 · 北欧暖木风格。展示代码项目与文章。",
+  "description": "Canyon 的个人网站 · 北欧暖木风格。展示代码项目与文章。",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
